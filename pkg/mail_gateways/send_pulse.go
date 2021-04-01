@@ -5,12 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"github.com/adityaxdiwakar/go-sendpulse"
+	"gitlab.com/lawchad/mailler"
 	"io/ioutil"
 	"log"
 	"net/http"
 )
 
-func SendEmail(name, email string) {
+func SpSendEmail(name, email string) {
 	html := []byte("<strong>Peekaboo!</strong>")
 	text := []byte("Peekaboo!")
 	recipients := []sendpulse.Recipient{
@@ -22,8 +23,8 @@ func SendEmail(name, email string) {
 	subject := "Hey There"
 
 	sendpulse.Initialize(
-		"ClientID",
-		"ClientSecret",
+		mailler.ClientID,
+		mailler.ClientSecret,
 		"name",
 		"email",
 	)
@@ -38,7 +39,7 @@ func SendEmail(name, email string) {
 	log.Fatalln(err)
 }
 
-func GetBalance() error {
+func GetBalance() (error, int) {
 	req, err := http.NewRequest(
 		"GET",
 		"https://api.sendpulse.com/user/balance/detail",
@@ -46,7 +47,7 @@ func GetBalance() error {
 	)
 
 	if err != nil {
-		return errors.New("something wrong with string -> request")
+		return errors.New("something wrong with string -> request"), 0
 	}
 
 	token, err := GetKey()
@@ -56,18 +57,19 @@ func GetBalance() error {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return errors.New("reading the response gave an error")
+		return errors.New("reading the response gave an error"), 0
 	}
 
 	bytes, err := ioutil.ReadAll(resp.Body)
 
 	var balance BalanceDetailed
 	if err := json.Unmarshal(bytes, &balance); err != nil {
-		return errors.New("reading the response gave an error")
+		fmt.Println(err)
+		return errors.New("reading the response gave an error"), 0
 	}
 
 	fmt.Println(balance.Email.EmailsLeft)
 	fmt.Println(balance.Balance.Main)
 
-	return nil
+	return nil, balance.Email.EmailsLeft
 }

@@ -6,12 +6,21 @@ import (
 	"net/http"
 )
 
-func GetQuery(c *gin.Context) {
-	var json mail_gateways.Query
+var json mail_gateways.Query
+var balanceInfo mail_gateways.BalanceInfo
+
+func SendEmail(c *gin.Context) {
+	var balance = CheckBalance(&balanceInfo.DateCheckBalance, &balanceInfo.Balance)
+
 	if err := c.ShouldBindJSON(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	mail_gateways.SendEmail(json.Name, json.Mail)
+	if balance >= 100 {
+		mail_gateways.SpSendEmail(json.Name, json.Mail)
+	} else {
+		mail_gateways.MgSendEmail(json.Name, json.Mail)
+	}
+
 	c.JSON(http.StatusOK, gin.H{"status": "OK"})
 }
