@@ -7,7 +7,7 @@ type oauthTokenResponse struct {
 
 type BalanceDetailed struct {
 	Balance *struct {
-		Main float32 `json:"main,omitempty"`
+		Main string `json:"main,omitempty"`
 	} `json:"balance,omitempty"`
 	Email *struct {
 		EmailsLeft int `json:"emails_left,omitempty"`
@@ -17,4 +17,10 @@ type BalanceDetailed struct {
 type Query struct {
 	Name string `json:"name"`
 	Mail string `json:"mail"`
+	TemplateName string `json:"template_name"`
+}
+
+type BalanceInfo struct {
+	DateCheckBalance string
+	Balance int
 }

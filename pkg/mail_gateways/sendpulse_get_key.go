@@ -4,19 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"gitlab.com/lawchad/mailler"
 	"io/ioutil"
 	"net/http"
 )
 
 func GetKey() (string, error) {
-	var grantType = "client_credentials"
-	var clientID = "clientID"
-	var clientSecret = "clientSecret"
-
 	requestBody, err := json.Marshal(map[string]string{
-		"grant_type":    grantType,
-		"client_id":     clientID,
-		"client_secret": clientSecret,
+		"grant_type":    mailler.GrantType,
+		"client_id":     mailler.ClientID,
+		"client_secret": mailler.ClientSecret,
 	})
 
 	if err != nil {
