@@ -15,12 +15,13 @@ type BalanceDetailed struct {
 }
 
 type Query struct {
-	Name string `json:"name"`
-	Mail string `json:"mail"`
+	Name         string `json:"name"`
+	Mail         string `json:"mail"`
 	TemplateName string `json:"template_name"`
+	Mac          string `json:"MAC"`
 }
 
 type BalanceInfo struct {
 	DateCheckBalance string
-	Balance int
+	Balance          int
 }
