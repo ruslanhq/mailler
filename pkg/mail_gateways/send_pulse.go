@@ -11,8 +11,8 @@ import (
 	"net/http"
 )
 
-func SpSendEmail(name, email string) {
-	html := []byte("<strong>Peekaboo!</strong>")
+func SpSendEmail(name, email, htmlText string) {
+	html := []byte(htmlText)
 	text := []byte("Peekaboo!")
 	recipients := []sendpulse.Recipient{
 		sendpulse.Recipient{

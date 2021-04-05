@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func MgSendEmail(name, email string) {
+func MgSendEmail(name, email, htmlText string) {
 	// Create an instance of the Mailgun Client
 	mg := mailgun.NewMailgun(mailler.MgDomain, mailler.MgPrivateAPIKey)
 
@@ -21,7 +21,7 @@ func MgSendEmail(name, email string) {
 	// The message object allows you to add attachments and Bcc recipients
 	message := mg.NewMessage(sender, subject, body, recipient)
 
-	//message.SetHtml("<html>HTML version of the body<h1>TEST</h1></html>")
+	message.SetHtml(htmlText)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
