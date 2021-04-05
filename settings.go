@@ -11,3 +11,7 @@ var MgPrivateAPIKey = "MgPrivateAPIKey"
 var GrantType = "client_credentials"
 var ClientID = "ClientID"
 var ClientSecret = "ClientSecret"
+
+//Mjml
+var UserId = "userIdMJML"
+var UserKey = "userKeyMJML"

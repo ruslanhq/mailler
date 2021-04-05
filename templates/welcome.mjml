@@ -1,0 +1,61 @@
+<mjml>
+    <mj-body background-color='#ffffff'>
+        <mj-section background-color='#ffffff' padding-bottom='0px'
+                    padding-top='0'>
+            <mj-column vertical-align='top' width='100%'>
+                <mj-image
+                        src='https://www.themeqx.com/wp-content/uploads/2017/08/smtp-email.jpg'
+                        align='center' border='none' width='600px'
+                        height='250px' padding-left='0px' padding-right='0px'
+                        padding-bottom='0px' padding-top='0'/>
+            </mj-column>
+        </mj-section>
+        <mj-section
+                background-color='#336666'
+                padding-bottom='0px'
+                padding-top='0'>
+            <mj-column vertical-align='top' width='100%'>
+                <mj-text align='center' color='#ffffff' font-size='35px'
+                         font-weight='bold' font-family='Montserrat, sans-serif'
+                         padding-left='25px' padding-right='25px'
+                         padding-bottom='30px' padding-top='40px'>welcome to
+                    mail service
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section
+                background-color='#FF6666'
+                padding-bottom='20px'
+                padding-top='20px'>
+            <mj-column vertical-align='middle' width='100%'>
+                <mj-text align='left' color='#ffffff' font-size='22px'
+                         font-family='Montserrat, sans-serif'
+                         padding-left='25px' padding-right='25px'>
+                    <span style='color:#FFFFCC'>Dear {{.username}}</span>
+                    <br/>
+                    <br/>
+                    Welcome to {{.company}}.
+                </mj-text>
+                <mj-text align='left' color='#ffffff' font-size='15px'
+                         font-family='Montserrat, sans-serif'
+                         padding-left='25px' padding-right='25px'>We&apos;re
+                    really excited you&apos;ve decided to give us a try. In case
+                    you have any questions, feel free to reach out to us at
+                    {{.email}}. You can login to your account with your username
+                    {{.username}}
+                </mj-text>
+                <mj-button align='left' font-size='21px' font-weight='bold'
+                           background-color='#ffffff' border-radius='12px'
+                           color='#FF6666' font-family='Montserrat, sans-serif'>
+                    Login
+                </mj-button>
+                <mj-text align='left' color='#ffffff' font-size='15px'
+                         font-family='Montserrat, sans-serif'
+                         padding-left='25px' padding-right='25px'>Thanks,
+                    <br/>
+                    The {{.company}} Team
+                </mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>

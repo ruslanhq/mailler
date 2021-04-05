@@ -9,6 +9,10 @@ import (
 	"reflect"
 	"strings"
 	"time"
+	"os"
+	"errors"
+	"log"
+	"io/ioutil"
 )
 
 func CheckBalance(date *string, balance *int) int {
@@ -39,4 +43,29 @@ func DataStringFromStruct(query mail_gateways.Query) string {
 		}
 	}
 	return strings.Join(dataSlice, "-") + ";"
+}
+
+
+func GetMjmlTemplateString(templateName string) (string,error){
+	files, err := ioutil.ReadDir("../templates")
+	if err != nil{
+		return "", err
+	}
+
+	tmpName := fmt.Sprintf("%s.mjml", templateName)
+	for _, file := range files {
+		if tmpName != file.Name() {
+			badTempErr:=errors.New("bad template name")
+			log.Fatal(badTempErr)
+			return "", badTempErr
+		}
+	}
+	templatePath := fmt.Sprintf("../templates/%s", tmpName)
+
+	data, err := os.ReadFile(templatePath)
+	if err != nil {
+		return "",err
+	}
+
+	return string(data),nil
 }

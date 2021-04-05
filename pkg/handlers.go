@@ -10,6 +10,8 @@ import (
 var json mail_gateways.Query
 var balanceInfo mail_gateways.BalanceInfo
 
+
+
 func SendEmail(c *gin.Context) {
 	var balance = CheckBalance(
 		&balanceInfo.DateCheckBalance, &balanceInfo.Balance,
@@ -27,10 +29,18 @@ func SendEmail(c *gin.Context) {
 		return
 	}
 
+	templateName := json.TemplateName
+	mjmlApp := NewMjmlApp(templateName)
+	htmlText, err := mjmlApp.GetHtml()
+	if err != nil{
+		err := errors.New("Cant render template with name: " + templateName)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
 	if balance >= 100 {
-		mail_gateways.SpSendEmail(json.Name, json.Mail)
+		mail_gateways.SpSendEmail(json.Name, json.Mail, htmlText)
 	} else {
-		mail_gateways.MgSendEmail(json.Name, json.Mail)
+		mail_gateways.MgSendEmail(json.Name, json.Mail, htmlText)
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "OK"})
