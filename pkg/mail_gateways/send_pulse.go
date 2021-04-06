@@ -5,7 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/adityaxdiwakar/go-sendpulse"
-	"gitlab.com/lawchad/mailler"
+	"github.com/getsentry/sentry-go"
+	"gitlab.com/lawchad/mailler/configs"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -23,8 +24,8 @@ func SpSendEmail(name, email, htmlText string) {
 	subject := "Hey There"
 
 	sendpulse.Initialize(
-		mailler.ClientID,
-		mailler.ClientSecret,
+		configs.ClientID,
+		configs.ClientSecret,
 		"name",
 		"email",
 	)
@@ -36,6 +37,7 @@ func SpSendEmail(name, email, htmlText string) {
 		recipients,
 	)
 
+	sentry.CaptureException(err)
 	log.Fatalln(err)
 }
 
@@ -47,6 +49,7 @@ func GetBalance() (error, int) {
 	)
 
 	if err != nil {
+		sentry.CaptureException(err)
 		return errors.New("something wrong with string -> request"), 0
 	}
 
@@ -57,6 +60,7 @@ func GetBalance() (error, int) {
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
+		sentry.CaptureException(err)
 		return errors.New("reading the response gave an error"), 0
 	}
 
@@ -65,11 +69,9 @@ func GetBalance() (error, int) {
 	var balance BalanceDetailed
 	if err := json.Unmarshal(bytes, &balance); err != nil {
 		fmt.Println(err)
+		sentry.CaptureException(err)
 		return errors.New("reading the response gave an error"), 0
 	}
-
-	fmt.Println(balance.Email.EmailsLeft)
-	fmt.Println(balance.Balance.Main)
 
 	return nil, balance.Email.EmailsLeft
 }

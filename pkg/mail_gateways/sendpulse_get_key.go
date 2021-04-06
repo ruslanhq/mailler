@@ -4,19 +4,21 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"gitlab.com/lawchad/mailler"
+	"github.com/getsentry/sentry-go"
+	"gitlab.com/lawchad/mailler/configs"
 	"io/ioutil"
 	"net/http"
 )
 
 func GetKey() (string, error) {
 	requestBody, err := json.Marshal(map[string]string{
-		"grant_type":    mailler.GrantType,
-		"client_id":     mailler.ClientID,
-		"client_secret": mailler.ClientSecret,
+		"grant_type":    configs.GrantType,
+		"client_id":     configs.ClientID,
+		"client_secret": configs.ClientSecret,
 	})
 
 	if err != nil {
+		sentry.CaptureException(err)
 		return "", errors.New("Marshalling request payload gave an error.")
 	}
 
@@ -25,6 +27,7 @@ func GetKey() (string, error) {
 		bytes.NewBuffer(requestBody))
 
 	if err != nil {
+		sentry.CaptureException(err)
 		return "", errors.New("Making the request gave an error.")
 	}
 
@@ -32,6 +35,7 @@ func GetKey() (string, error) {
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
+		sentry.CaptureException(err)
 		return "", errors.New("Reading the response gave an error.")
 	}
 
@@ -39,6 +43,7 @@ func GetKey() (string, error) {
 	err = json.Unmarshal([]byte(body), &response)
 
 	if response.ErrorCode != 0 {
+		sentry.CaptureException(err)
 		return "", errors.New("SendPulse sent an error.")
 	}
 

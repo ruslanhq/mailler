@@ -4,15 +4,16 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
+	"errors"
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"gitlab.com/lawchad/mailler/pkg/mail_gateways"
+	"io/ioutil"
+	"log"
+	"os"
 	"reflect"
 	"strings"
 	"time"
-	"os"
-	"errors"
-	"log"
-	"io/ioutil"
 )
 
 func CheckBalance(date *string, balance *int) int {
@@ -45,17 +46,18 @@ func DataStringFromStruct(query mail_gateways.Query) string {
 	return strings.Join(dataSlice, "-") + ";"
 }
 
-
-func GetMjmlTemplateString(templateName string) (string,error){
+func GetMjmlTemplateString(templateName string) (string, error) {
 	files, err := ioutil.ReadDir("../templates")
-	if err != nil{
+	if err != nil {
+		sentry.CaptureException(err)
 		return "", err
 	}
 
 	tmpName := fmt.Sprintf("%s.mjml", templateName)
 	for _, file := range files {
 		if tmpName != file.Name() {
-			badTempErr:=errors.New("bad template name")
+			badTempErr := errors.New("bad template name")
+			sentry.CaptureException(badTempErr)
 			log.Fatal(badTempErr)
 			return "", badTempErr
 		}
@@ -64,8 +66,9 @@ func GetMjmlTemplateString(templateName string) (string,error){
 
 	data, err := os.ReadFile(templatePath)
 	if err != nil {
-		return "",err
+		sentry.CaptureException(err)
+		return "", err
 	}
 
-	return string(data),nil
+	return string(data), nil
 }

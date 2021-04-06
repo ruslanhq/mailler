@@ -1,14 +1,15 @@
 package pkg
 
-import(
-	"fmt"
+import (
 	"bytes"
 	"encoding/base64"
-	"net/http"
+	JSON "encoding/json"
+	"fmt"
+	"github.com/getsentry/sentry-go"
+	"gitlab.com/lawchad/mailler/configs"
 	"io/ioutil"
 	"log"
-	JSON "encoding/json"
-	"gitlab.com/lawchad/mailler"
+	"net/http"
 )
 
 type mjmlRequest struct {
@@ -20,64 +21,67 @@ type mjmlResponse struct {
 	Mjml string `json:"mjml"`
 }
 
-type App struct{
-	url string
-	name string
+type App struct {
+	url      string
+	name     string
 	password string
-	request []byte
+	request  []byte
 }
-
 
 func NewMjmlApp(templateName string) (a App) {
 	mjmlTemplateString, err := GetMjmlTemplateString(templateName)
 	if err != nil {
+		sentry.CaptureException(err)
 		log.Fatal("trouble with template")
 	}
 
-	mjml := mjmlRequest{Mjml:mjmlTemplateString}
+	mjml := mjmlRequest{Mjml: mjmlTemplateString}
 	byArr, err := JSON.Marshal(mjml)
 
 	if err != nil {
+		sentry.CaptureException(err)
 		log.Fatal(err)
 	}
 
 	app := App{
-		url: "https://api.mjml.io/v1/render",
-		name: mailler.UserId,
-		password: mailler.UserKey,
-		request: byArr
+		url:      "https://api.mjml.io/v1/render",
+		name:     configs.MjmlApplicationId,
+		password: configs.MjmlSecretKey,
+		request:  byArr,
 	}
 
 	return app
 }
 
-func (a App) GetHtml() (string,error) {
+func (a App) GetHtml() (string, error) {
 	req, err := http.NewRequest("POST", a.url, bytes.NewBuffer(a.request))
-    byteArray := []byte(fmt.Sprintf("%s:%s",a.name,a.password))
-    b64Str := base64.StdEncoding.EncodeToString(byteArray)
-    reqHeaderStr := fmt.Sprintf("Basic %s", b64Str)
-    req.Header.Add("Authorization", reqHeaderStr)
+	byteArray := []byte(fmt.Sprintf("%s:%s", a.name, a.password))
+	b64Str := base64.StdEncoding.EncodeToString(byteArray)
+	reqHeaderStr := fmt.Sprintf("Basic %s", b64Str)
+	req.Header.Add("Authorization", reqHeaderStr)
 
-    client := &http.Client{}
-    resp,err := client.Do(req)
-    if err != nil {
-        panic(err)
-    }
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		sentry.CaptureException(err)
+		panic(err)
+	}
 
-    defer resp.Body.Close()
+	defer resp.Body.Close()
 
-    body, err := ioutil.ReadAll(resp.Body)
-    if err != nil {
-        return "", err
-    }
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		sentry.CaptureException(err)
+		return "", err
+	}
 
-    var response mjmlResponse
+	var response mjmlResponse
 
-    err = JSON.Unmarshal([]byte(body), &response)
-    if err != nil{
-        return "",err
-    }
+	err = JSON.Unmarshal([]byte(body), &response)
+	if err != nil {
+		sentry.CaptureException(err)
+		return "", err
+	}
 
-    return response.Html,nil
+	return response.Html, nil
 }
-
