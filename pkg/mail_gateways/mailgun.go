@@ -3,15 +3,16 @@ package mail_gateways
 import (
 	"context"
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"github.com/mailgun/mailgun-go/v4"
-	"gitlab.com/lawchad/mailler"
+	"gitlab.com/lawchad/mailler/configs"
 	"log"
 	"time"
 )
 
 func MgSendEmail(name, email, htmlText string) {
 	// Create an instance of the Mailgun Client
-	mg := mailgun.NewMailgun(mailler.MgDomain, mailler.MgPrivateAPIKey)
+	mg := mailgun.NewMailgun(configs.MgDomain, configs.MgPrivateAPIKey)
 
 	sender := "example@gmail.com"
 	subject := "Fancy Test!"
@@ -30,6 +31,7 @@ func MgSendEmail(name, email, htmlText string) {
 	resp, id, err := mg.Send(ctx, message)
 
 	if err != nil {
+		sentry.CaptureException(err)
 		log.Fatal(err)
 	}
 
