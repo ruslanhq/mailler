@@ -15,10 +15,11 @@ type BalanceDetailed struct {
 }
 
 type Query struct {
-	Name         string `json:"name"`
-	Mail         string `json:"mail"`
-	TemplateName string `json:"template_name"`
-	Mac          string `json:"MAC"`
+	UserName     string            `json:"username"`
+	Mail         string            `json:"mail"`
+	TemplateName string            `json:"template_name"`
+	Mac          string            `json:"MAC"`
+	Payload      map[string]string `json:"payload"`
 }
 
 type BalanceInfo struct {

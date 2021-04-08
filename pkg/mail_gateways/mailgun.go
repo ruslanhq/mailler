@@ -21,7 +21,6 @@ func MgSendEmail(name, email, htmlText string) {
 
 	// The message object allows you to add attachments and Bcc recipients
 	message := mg.NewMessage(sender, subject, body, recipient)
-
 	message.SetHtml(htmlText)
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
