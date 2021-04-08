@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
@@ -13,6 +14,7 @@ import (
 	"os"
 	"reflect"
 	"strings"
+	"text/template"
 	"time"
 )
 
@@ -46,8 +48,10 @@ func DataStringFromStruct(query mail_gateways.Query) string {
 	return strings.Join(dataSlice, "-") + ";"
 }
 
-func GetMjmlTemplateString(templateName string) (string, error) {
-	files, err := ioutil.ReadDir("../templates")
+func GetMjmlTemplateString(
+	templateName string, payload map[string]string,
+) (string, error) {
+	files, err := ioutil.ReadDir("./templates")
 	if err != nil {
 		sentry.CaptureException(err)
 		return "", err
@@ -62,7 +66,7 @@ func GetMjmlTemplateString(templateName string) (string, error) {
 			return "", badTempErr
 		}
 	}
-	templatePath := fmt.Sprintf("../templates/%s", tmpName)
+	templatePath := fmt.Sprintf("./templates/%s", tmpName)
 
 	data, err := os.ReadFile(templatePath)
 	if err != nil {
@@ -70,5 +74,13 @@ func GetMjmlTemplateString(templateName string) (string, error) {
 		return "", err
 	}
 
-	return string(data), nil
+	//Adding variables to the template
+	t := template.Must(template.New("letter").Parse(string(data)))
+	buf := new(bytes.Buffer)
+	if err := t.Execute(buf, payload); err != nil {
+		sentry.CaptureException(err)
+		log.Println("executing template:", err)
+	}
+
+	return buf.String(), nil
 }
