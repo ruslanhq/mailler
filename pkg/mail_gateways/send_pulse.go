@@ -12,7 +12,7 @@ import (
 	"net/http"
 )
 
-func SpSendEmail(name, email, htmlText string) {
+func SpSendEmail(name, email, htmlText, subjectStr string) {
 	html := []byte(htmlText)
 	text := []byte("Peekaboo!")
 	recipients := []sendpulse.Recipient{
@@ -21,7 +21,7 @@ func SpSendEmail(name, email, htmlText string) {
 			Email: email,
 		},
 	}
-	subject := "Hey There"
+	subject := subjectStr
 
 	sendpulse.Initialize(
 		configs.ClientID,

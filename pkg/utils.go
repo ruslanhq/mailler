@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"crypto/hmac"
 	"crypto/sha256"
-	"encoding/base64"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"github.com/getsentry/sentry-go"
@@ -13,6 +13,7 @@ import (
 	"log"
 	"os"
 	"reflect"
+	"sort"
 	"strings"
 	"text/template"
 	"time"
@@ -29,7 +30,7 @@ func CheckBalance(date *string, balance *int) int {
 func ValidMAC(payload string, messageMAC, key []byte) bool {
 	mac := hmac.New(sha256.New, key)
 	mac.Write([]byte(payload))
-	expectedMAC := []byte(base64.StdEncoding.EncodeToString(mac.Sum(nil)))
+	expectedMAC := []byte(hex.EncodeToString(mac.Sum(nil)))
 	return hmac.Equal(messageMAC, expectedMAC)
 }
 
@@ -40,16 +41,28 @@ func DataStringFromStruct(query mail_gateways.Query) string {
 
 	for i := 0; i < v.NumField(); i++ {
 		if typeOfS.Field(i).Name != "Mac" {
-			dataSlice = append(dataSlice, fmt.Sprintf(
-				"%s=%v", typeOfS.Field(i).Name, v.Field(i).Interface()),
-			)
+			if typeOfS.Field(i).Name == "Payload" {
+				for key, value := range v.Field(i).Interface().(
+				map[string]interface{}) {
+					dataSlice = append(
+						dataSlice, fmt.Sprintf("%s=%s", key, value),
+					)
+				}
+			} else {
+				dataSlice = append(dataSlice, fmt.Sprintf(
+					"%s=%v", typeOfS.Field(i).Name, v.Field(i).Interface(),
+				),
+				)
+			}
 		}
 	}
+
+	sort.Strings(dataSlice)
 	return strings.Join(dataSlice, "-") + ";"
 }
 
 func GetMjmlTemplateString(
-	templateName string, payload map[string]string,
+	templateName string, payload map[string]interface{},
 ) (string, error) {
 	files, err := ioutil.ReadDir("./templates")
 	if err != nil {

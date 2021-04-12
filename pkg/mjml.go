@@ -28,7 +28,7 @@ type App struct {
 	request  []byte
 }
 
-func NewMjmlApp(templateName string, payload map[string]string) (a App) {
+func NewMjmlApp(templateName string, payload map[string]interface{}) (a App) {
 	mjmlTemplateString, err := GetMjmlTemplateString(templateName, payload)
 	if err != nil {
 		sentry.CaptureException(err)
