@@ -10,12 +10,12 @@ import (
 	"time"
 )
 
-func MgSendEmail(name, email, htmlText string) {
+func MgSendEmail(name, email, htmlText, subjectStr string) {
 	// Create an instance of the Mailgun Client
 	mg := mailgun.NewMailgun(configs.MgDomain, configs.MgPrivateAPIKey)
 
 	sender := "example@gmail.com"
-	subject := "Fancy Test!"
+	subject := subjectStr
 	body := "Hello from Mailgun Go!"
 	recipient := email
 

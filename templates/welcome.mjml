@@ -34,14 +34,14 @@
                     <span style='color:#FFFFCC'>Dear {{.username}}</span>
                     <br/>
                     <br/>
-                    Welcome to {{.company}}.
+                    Welcome to {{.payload.company}}.
                 </mj-text>
                 <mj-text align='left' color='#ffffff' font-size='15px'
                          font-family='Montserrat, sans-serif'
                          padding-left='25px' padding-right='25px'>We&apos;re
                     really excited you&apos;ve decided to give us a try. In case
                     you have any questions, feel free to reach out to us at
-                    {{.email}}. You can login to your account with your username
+                    {{.mail}}. You can login to your account with your username
                     {{.username}}
                 </mj-text>
                 <mj-button align='left' font-size='21px' font-weight='bold'
@@ -53,7 +53,7 @@
                          font-family='Montserrat, sans-serif'
                          padding-left='25px' padding-right='25px'>Thanks,
                     <br/>
-                    The {{.company}} Team
+                    The {{.payload.company}} Team
                 </mj-text>
             </mj-column>
         </mj-section>

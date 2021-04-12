@@ -32,10 +32,13 @@ func SendEmail(c *gin.Context) {
 		sentry.CaptureException(err)
 		return
 	}
+
 	//Create map with data for templates
-	payload := jsonData.Payload
-	payload["username"] = jsonData.UserName
-	payload["email"] = jsonData.Mail
+	payload := map[string]interface{}{
+		"payload":  jsonData.Payload,
+		"username": jsonData.UserName,
+		"mail":     jsonData.Mail,
+	}
 
 	mjmlApp := NewMjmlApp(jsonData.TemplateName, payload)
 	htmlText, err := mjmlApp.GetHtml()
@@ -49,11 +52,11 @@ func SendEmail(c *gin.Context) {
 
 	if balance >= 100 {
 		mail_gateways.SpSendEmail(
-			jsonData.UserName, jsonData.Mail, htmlText,
+			jsonData.UserName, jsonData.Mail, htmlText, jsonData.Subject,
 		)
 	} else {
 		mail_gateways.MgSendEmail(
-			jsonData.UserName, jsonData.Mail, htmlText,
+			jsonData.UserName, jsonData.Mail, htmlText, jsonData.Subject,
 		)
 	}
 
