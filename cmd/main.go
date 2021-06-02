@@ -6,6 +6,7 @@ import (
 	"gitlab.com/lawchad/mailler/configs"
 	"gitlab.com/lawchad/mailler/pkg"
 	"log"
+	"unit.nginx.org/go"
 )
 
 func main() {
@@ -18,5 +19,5 @@ func main() {
 
 	r := gin.Default()
 	r.POST("/mailler", pkg.SendEmail)
-	r.Run(configs.Port)
+	unit.ListenAndServe(configs.Port, &*r)
 }
