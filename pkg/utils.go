@@ -11,7 +11,6 @@ import (
 	"gitlab.com/lawchad/mailler/pkg/mail_gateways"
 	"io/ioutil"
 	"log"
-	"os"
 	"reflect"
 	"sort"
 	"strings"
@@ -81,7 +80,7 @@ func GetMjmlTemplateString(
 	}
 	templatePath := fmt.Sprintf("./templates/%s", tmpName)
 
-	data, err := os.ReadFile(templatePath)
+	data, err := ioutil.ReadFile(templatePath)
 	if err != nil {
 		sentry.CaptureException(err)
 		return "", err
