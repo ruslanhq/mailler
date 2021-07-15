@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/getsentry/sentry-go"
 	"gitlab.com/lawchad/mailler/pkg/mail_gateways"
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"reflect"
@@ -60,6 +61,15 @@ func DataStringFromStruct(query mail_gateways.Query) string {
 	return strings.Join(dataSlice, "-") + ";"
 }
 
+func checkTemplateName(tmpName string, list []fs.FileInfo) bool {
+	for _, file := range list {
+		if file.Name() == tmpName {
+			return true
+		}
+	}
+	return false
+}
+
 func GetMjmlTemplateString(
 	templateName string, payload map[string]interface{},
 ) (string, error) {
@@ -70,14 +80,14 @@ func GetMjmlTemplateString(
 	}
 
 	tmpName := fmt.Sprintf("%s.mjml", templateName)
-	for _, file := range files {
-		if tmpName != file.Name() {
-			badTempErr := errors.New("bad template name")
-			sentry.CaptureException(badTempErr)
-			log.Fatal(badTempErr)
-			return "", badTempErr
-		}
+
+	if !checkTemplateName(tmpName, files) {
+		badTempErr := errors.New("template with this name does not exist")
+		sentry.CaptureException(badTempErr)
+		log.Fatal(badTempErr)
+		return "", badTempErr
 	}
+
 	templatePath := fmt.Sprintf("./templates/%s", tmpName)
 
 	data, err := ioutil.ReadFile(templatePath)
